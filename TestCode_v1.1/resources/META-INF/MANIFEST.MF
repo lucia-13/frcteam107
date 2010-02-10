@@ -1,0 +1,6 @@
+MIDlet-Name: TestCode_v1.1
+MIDlet-Version: 1.0.0
+MIDlet-Vendor: FIRST
+MIDlet-1: Team107Robot, , edu.wpi.first.wpilibj.templates.Team107Robot
+MicroEdition-Profile: IMP-1.0
+MicroEdition-Configuration: CLDC-1.1
