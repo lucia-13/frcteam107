@@ -36,4 +36,9 @@ public class rateEncoder extends Encoder implements PIDSource
         lastCount = currentCount;
         return countChange;
     }
+    public double getDistanceChange()
+    {
+        double distanceChange = getCountChange()*Connections.EncoderDistancePerPulse;
+        return distanceChange;
+    }
 }

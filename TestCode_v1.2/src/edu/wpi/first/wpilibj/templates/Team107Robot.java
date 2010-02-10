@@ -38,7 +38,6 @@ public class Team107Robot extends IterativeRobot
     private Joystick leftStick, rightStick;
     private driveTrain drive;
     private Gyro gyro;
-    private Connections connections;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -47,8 +46,8 @@ public class Team107Robot extends IterativeRobot
     public void robotInit()
     {
         getWatchdog().feed();
-        leftStick = new Joystick(connections.LeftJoystickChannel);
-        rightStick = new Joystick(connections.RightJoystickChannel);
+        leftStick = new Joystick(Connections.LeftJoystickChannel);
+        rightStick = new Joystick(Connections.RightJoystickChannel);
         drive = new driveTrain(new PID(0.01, 0.001, 0.0), new PID(0.01, 0.001, 0.0), true);
     }
 
