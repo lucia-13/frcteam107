@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.Gyro;
  */
 public class driveTrain
 {
-    private Connections connections;
     private double leftSpeed, rightSpeed;
     private Jaguar leftMotor1, rightMotor1, leftMotor2, rightMotor2;
     private double leftFactor, rightFactor;
@@ -32,10 +31,10 @@ public class driveTrain
     private double x, y;
     public driveTrain(PID leftPID, PID rightPID, boolean PIDControlled)
     {
-        leftMotor1 = new Jaguar(connections.LeftMotorChannel1);
-        leftMotor2 = new Jaguar(connections.LeftMotorChannel2);
-        rightMotor1 = new Jaguar(connections.RightMotorChannel1);
-        rightMotor2 = new Jaguar(connections.RightMotorChannel2);
+        leftMotor1 = new Jaguar(Connections.LeftMotorChannel1);
+        leftMotor2 = new Jaguar(Connections.LeftMotorChannel2);
+        rightMotor1 = new Jaguar(Connections.RightMotorChannel1);
+        rightMotor2 = new Jaguar(Connections.RightMotorChannel2);
         leftSpeed = rightSpeed = 0.0;
         x = y = 0;
         leftFactor = -1.0;
@@ -45,18 +44,18 @@ public class driveTrain
         this.rightPID = rightPID;
         leftPIDOut = new SoftPID();
         rightPIDOut = new SoftPID();
-        leftEncoder = new rateEncoder(connections.LeftEncoderChannelA, connections.LeftEncoderChannelB);
-        rightEncoder = new rateEncoder(connections.RightEncoderChannelA, connections.RightEncoderChannelB);
-        leftEncoder.setDistancePerPulse(connections.EncoderDistancePerPulse);
-        leftEncoder.setDistancePerPulse(connections.EncoderDistancePerPulse);
-        gyro = new Gyro(connections.GyroChannel);
+        leftEncoder = new rateEncoder(Connections.LeftEncoderChannelA, Connections.LeftEncoderChannelB);
+        rightEncoder = new rateEncoder(Connections.RightEncoderChannelA, Connections.RightEncoderChannelB);
+        leftEncoder.setDistancePerPulse(Connections.EncoderDistancePerPulse);
+        leftEncoder.setDistancePerPulse(Connections.EncoderDistancePerPulse);
+        gyro = new Gyro(Connections.GyroChannel);
         leftController = new PIDController(leftPID.p, leftPID.i, leftPID.d, leftEncoder, leftPIDOut);
         rightController = new PIDController(rightPID.p, rightPID.i, rightPID.d, rightEncoder, rightPIDOut);
         leftController.setContinuous();
         leftController.setOutputRange(-1.0, 1.0);
         rightController.setContinuous();
         rightController.setOutputRange(-1.0, 1.0);
-        rateRatio = connections.RateRatio;
+        rateRatio = Connections.RateRatio;
     }
     public void update(double leftSpeed, double rightSpeed)
     {
@@ -85,11 +84,9 @@ public class driveTrain
             rightMotor2.set(rightSpeed);
         }
         x += java.lang.Math.cos(java.lang.Math.toRadians(gyro.getAngle()-90))
-                *(leftEncoder.getCountChange()+rightEncoder.getCountChange())/2
-                *connections.EncoderDistancePerPulse;
+                *(leftEncoder.getDistanceChange()+rightEncoder.getDistanceChange())/2;
         y += java.lang.Math.sin(java.lang.Math.toRadians(gyro.getAngle()-90))
-                *(leftEncoder.getCountChange() +rightEncoder.getCountChange())/2
-                *connections.EncoderDistancePerPulse;
+                *(leftEncoder.getDistanceChange() +rightEncoder.getDistanceChange())/2;
         leftSpeed = 0.0;
         rightSpeed = 0.0;
     }
