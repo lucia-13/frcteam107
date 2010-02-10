@@ -57,13 +57,6 @@ public class driveTrain
         rightController.setOutputRange(-1.0, 1.0);
         rateRatio = Connections.RateRatio;
     }
-    public void update(double leftSpeed, double rightSpeed)
-    {
-        checkSpeed();
-        this.leftSpeed = leftSpeed*leftFactor;
-        this.rightSpeed = rightSpeed*rightFactor;
-        update();
-    }
     public void update()
     {
         checkSpeed();
