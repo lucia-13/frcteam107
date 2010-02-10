@@ -8,6 +8,8 @@
  *
  *
  * In this version, we are trying to get PID Loops working for the wheels.
+ * Also, we are trying to get our Version Control working, and this comment
+ * is proof of that fact.
  */
 /*----------------------------------------------------------------------------*/
 package edu.wpi.first.wpilibj.templates;
