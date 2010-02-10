@@ -17,7 +17,6 @@ package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Gyro;
 
 import edu.wpi.first.wpilibj.AnalogModule;
 import edu.wpi.first.wpilibj.Dashboard;
@@ -35,7 +34,6 @@ public class Team107Robot extends IterativeRobot
 {
     private Joystick leftStick, rightStick;
     private driveTrain drive;
-    private Gyro gyro;
 
     /**
      * This function is run when the robot is first started up and should be
