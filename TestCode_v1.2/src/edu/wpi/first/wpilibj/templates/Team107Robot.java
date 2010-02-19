@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj.Dashboard;
 import edu.wpi.first.wpilibj.DigitalModule;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Compressor;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -34,6 +36,9 @@ public class Team107Robot extends IterativeRobot
 {
     private Joystick leftStick, rightStick;
     private driveTrain drive;
+    private Timer time;
+    private Compressor compressor;
+    private BallHandler kicker;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -44,7 +49,16 @@ public class Team107Robot extends IterativeRobot
         getWatchdog().feed();
         leftStick = new Joystick(Connections.LeftJoystickChannel);
         rightStick = new Joystick(Connections.RightJoystickChannel);
-        drive = new driveTrain(new PID(0.01, 0.001, 0.0), new PID(0.01, 0.001, 0.0), true);
+        drive = new driveTrain(new PID(0.01, 0.001, 0.0), new PID(0.01, 0.001, 0.0), false);
+        time = new Timer();
+        time.start();
+        kicker = new BallHandler();
+        compressor = new Compressor(Connections.PressureSwitchChannel, Connections.CompressorSpikeChannel);
+        compressor.start();
+//        cylinderIn = new Solenoid(8, Connections.SolenoidInChannel);
+//        cylinderOut = new Solenoid(8, Connections.SolenoidOutChannel);
+//        cylinderIsOut = false;
+//        firingServo = new Servo(Connections.FiringServoChannel);
     }
 
     /**
@@ -59,9 +73,37 @@ public class Team107Robot extends IterativeRobot
      */
     public void teleopPeriodic()
     {
+        if(leftStick.getTrigger())
+        {
+            kicker.kick();
+        }
+        if(leftStick.getRawButton(3))
+        {
+            kicker.reload(true);
+        }
+        else if(leftStick.getRawButton(2))
+        {
+            //kicker.pullIn();
+        }
+        if(rightStick.getRawButton(3))
+        {
+            drive.setShifter(true);
+        }
+        else if(rightStick.getRawButton(2))
+        {
+            drive.setShifter(false);
+        }
         drive.set(leftStick.getY(), rightStick.getY());
         sendDashboardData();
-        drive.update(); //do this at end of loop
+        if(leftStick.getRawButton(10))
+        {
+            kicker.setFrontRoller(true);
+        }
+        else
+        {
+            kicker.setFrontRoller(false);
+        }
+        drive.printEncoders();
     }
 
     public void sendDashboardData()
@@ -73,10 +115,18 @@ public class Team107Robot extends IterativeRobot
             {     //analog modules
                 dash.addCluster();
                 {
-                    for (int i = 1; i <= 8; i++)
-                    {
-                        dash.addFloat((float) AnalogModule.getInstance(1).getAverageVoltage(i));
-                    }
+                    dash.addFloat((float) time.get());
+                    dash.addFloat((float) drive.rightController.getSetpoint());
+                    dash.addFloat((float) rightStick.getY());
+                    dash.addFloat((float) time.get());
+                    dash.addFloat((float) drive.leftController.getSetpoint());
+                    dash.addFloat((float) drive.leftPIDOut.getValue());
+                    dash.addFloat((float) drive.getX());
+                    dash.addFloat((float) drive.getY());
+//                    for (int i = 1; i <= 8; i++)
+//                    {
+//                        dash.addFloat((float) AnalogModule.getInstance(1).getAverageVoltage(i));
+//                    }
                 }
                 dash.finalizeCluster();
                 dash.addCluster();

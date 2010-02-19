@@ -11,6 +11,9 @@ package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Gyro;
+import edu.wpi.first.wpilibj.Solenoid;
+import java.util.TimerTask;
+import edu.wpi.first.wpilibj.Relay;
 
 /**
  *
@@ -24,11 +27,15 @@ public class driveTrain
     private rateEncoder leftEncoder, rightEncoder;
     private Gyro gyro;
     private PID leftPID, rightPID;
-    private SoftPID leftPIDOut, rightPIDOut;
-    private PIDController leftController, rightController;
+    public SoftPID leftPIDOut, rightPIDOut;
+    public PIDController leftController, rightController;
     public boolean PIDControlled;
     private double rateRatio;
     private double x, y;
+    private Solenoid shifter;
+    private java.util.Timer controlLoop;
+    private double period;
+    private Relay fan;
     public driveTrain(PID leftPID, PID rightPID, boolean PIDControlled)
     {
         leftMotor1 = new Jaguar(Connections.LeftMotorChannel1);
@@ -56,8 +63,28 @@ public class driveTrain
         rightController.setContinuous();
         rightController.setOutputRange(-1.0, 1.0);
         rateRatio = Connections.RateRatio;
+        shifter = new Solenoid(Connections.SolenoidModuleSlot, Connections.ShifterChannel);
+        period = 0.02;
+        controlLoop = new java.util.Timer();
+        controlLoop.schedule(new UpdateTask(this), 0L, (long) (period*1000));
+        fan = new Relay(7);
+        fan.set(Relay.Value.kOn);
     }
-    public void update()
+    private class UpdateTask extends TimerTask
+    {
+        private driveTrain handler;
+        public UpdateTask(driveTrain handler)
+        {
+            if(handler == null)
+                throw new NullPointerException("Given driveTrain was null");
+            this.handler = handler;
+        }
+        public void run()
+        {
+            handler.update();
+        }
+    }
+    public synchronized void update()
     {
         checkSpeed();
         if(PIDControlled)
@@ -80,49 +107,62 @@ public class driveTrain
                 *(leftEncoder.getDistanceChange()+rightEncoder.getDistanceChange())/2;
         y += java.lang.Math.sin(java.lang.Math.toRadians(gyro.getAngle()-90))
                 *(leftEncoder.getDistanceChange() +rightEncoder.getDistanceChange())/2;
-        leftSpeed = 0.0;
-        rightSpeed = 0.0;
     }
     public void set(double leftSpeed, double rightSpeed)
     {
-        this.leftSpeed += leftSpeed*leftFactor;
-        this.rightSpeed += rightSpeed*rightFactor;
+        this.leftSpeed = leftSpeed*leftFactor;
+        this.rightSpeed = rightSpeed*rightFactor;
     }
     public void rotate(double rotationalSpeed)
     {
-        leftSpeed += rotationalSpeed;
-        rightSpeed += rotationalSpeed;
+        leftSpeed = rotationalSpeed;
+        rightSpeed = rotationalSpeed;
     }
-    public void oneWheelRotate(double rotationalSpeed)
-    {
-        if(rotationalSpeed > 0.0)
-        {
-            if(rightSpeed > 0.0 || leftSpeed + rotationalSpeed > 1.0) //We can't speed up leftSpeed, so we slow down rightSpeed
-            {
-                rightSpeed -= rotationalSpeed;
-            }
-            else if(rightSpeed <= 0.0) //We know that we have enough speed to add to leftSpeed
-            {
-                leftSpeed += rotationalSpeed;
-            }
-        }
-        else if(rotationalSpeed < 0.0)
-        {
-            if(leftSpeed > 0.0 || rightSpeed + rotationalSpeed > 1.0)
-            {
-                leftSpeed += rotationalSpeed; //Add because we already know it's negative
-            }
-            else if(leftSpeed <= 0.0)
-            {
-                rightSpeed -= rotationalSpeed;
-            }
-        }
-    }
+//    public void oneWheelRotate(double rotationalSpeed)
+//    {
+//        if(rotationalSpeed > 0.0)
+//        {
+//            if(rightSpeed > 0.0 || leftSpeed + rotationalSpeed > 1.0) //We can't speed up leftSpeed, so we slow down rightSpeed
+//            {
+//                rightSpeed -= rotationalSpeed;
+//            }
+//            else if(rightSpeed <= 0.0) //We know that we have enough speed to add to leftSpeed
+//            {
+//                leftSpeed += rotationalSpeed;
+//            }
+//        }
+//        else if(rotationalSpeed < 0.0)
+//        {
+//            if(leftSpeed > 0.0 || rightSpeed + rotationalSpeed > 1.0)
+//            {
+//                leftSpeed += rotationalSpeed; //Add because we already know it's negative
+//            }
+//            else if(leftSpeed <= 0.0)
+//            {
+//                rightSpeed -= rotationalSpeed;
+//            }
+//        }
+//    }
     public void straight(double speed)
     {
-        leftSpeed += speed*leftFactor;
-        rightSpeed += speed*rightFactor;
+        leftSpeed = speed*leftFactor;
+        rightSpeed = speed*rightFactor;
     }
+    public void setShifter(boolean highSpeed)
+    {
+        if(highSpeed)
+        {
+            shifter.set(false);
+        }
+        else
+        {
+            shifter.set(true);
+        }
+    }
+
+
+
+
     public PID getLeftPID()
     {
         return leftPID;
@@ -153,7 +193,11 @@ public class driveTrain
     {
         return gyro.getAngle();
     }
-    private void checkSpeed()
+    public void printEncoders()
+    {
+        System.out.println("Left Encoder: "+leftEncoder.get()+"   Right Encoder: "+rightEncoder.get());
+    }
+    private synchronized void checkSpeed()
     {
         if(leftSpeed > 1.0)
         {
@@ -175,5 +219,10 @@ public class driveTrain
             rightSpeed = -1.0;
             System.out.println("right speed over!");
         }
+    }
+    public void free() //DON'T CALL UNLESS NECESSARY
+    {
+        controlLoop.cancel();
+        controlLoop = null;
     }
 }

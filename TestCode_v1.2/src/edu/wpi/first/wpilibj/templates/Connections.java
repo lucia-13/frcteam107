@@ -12,7 +12,8 @@ package edu.wpi.first.wpilibj.templates;
  *
  * @author joshuf26
  */
-public class Connections {
+public class Connections
+{
     public static final int LeftMotorChannel1 = 1;
     public static final int LeftMotorChannel2 = 2;
     public static final int RightMotorChannel1 = 3;
@@ -26,4 +27,15 @@ public class Connections {
     public static final int GyroChannel = 1;
     public static final double RateRatio = 1.0; //SET THIS
     public static final double EncoderDistancePerPulse = 1.0; //SET THIS
+    public static final int KickerOutChannel = 1;
+    public static final int KickerInChannel = 2;
+    public static final int SolenoidModuleSlot = 8;
+    public static final int FiringServoChannel = 5;
+    public static final int LimitSwitchChannel = 6;
+    public static final int ShifterChannel = 3;
+    public static final int FrontRollerChannel = 6;
+    public static final int HangerMotorChannel1 = 7;
+    public static final int HangerMotorChannel2 = 8;
+    public static final int PressureSwitchChannel = 7;
+    public static final int CompressorSpikeChannel = 8;
 }
