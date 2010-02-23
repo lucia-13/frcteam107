@@ -35,7 +35,7 @@ import edu.wpi.first.wpilibj.Compressor;
 public class Team107Robot extends IterativeRobot
 {
     private Joystick leftStick, rightStick;
-    private driveTrain drive;
+    private DriveTrain drive;
     private Timer time;
     private Compressor compressor;
     private BallHandler kicker;
@@ -51,14 +51,14 @@ public class Team107Robot extends IterativeRobot
         getWatchdog().feed();
         leftStick = new Joystick(Connections.LeftJoystickChannel);
         rightStick = new Joystick(Connections.RightJoystickChannel);
-        drive = new driveTrain(new PID(0.01, 0.001, 0.0), new PID(0.01, 0.001, 0.0), false);
         time = new Timer();
         time.start();
-        kicker = new BallHandler();
+        drive = DriveTrain.getInstance();
+        kicker = BallHandler.getInstance();
+        hanger = Hanger.getInstance();
+        auton = Autonomous.getInstance();
         compressor = new Compressor(Connections.PressureSwitchChannel, Connections.CompressorSpikeChannel);
         compressor.start();
-        hanger = new Hanger();
-        auton = new Autonomous(1, drive, kicker);
 //        cylinderIn = new Solenoid(8, Connections.SolenoidInChannel);
 //        cylinderOut = new Solenoid(8, Connections.SolenoidOutChannel);
 //        cylinderIsOut = false;
@@ -70,7 +70,8 @@ public class Team107Robot extends IterativeRobot
      */
     public void autonomousInit()
     {
-        auton.initialize();
+        auton.initialize(1);
+        auton.goStraightUntil(20);
     }
 
     public void autonomousPeriodic()
