@@ -24,7 +24,8 @@ public class BallHandler
     public double period;
     private Victor frontRoller;
     private double servoLatched, servoOpen;
-    public BallHandler()
+    private static BallHandler instance = new BallHandler();
+    protected BallHandler()
     {
         kickerIn = new Solenoid(Connections.SolenoidModuleSlot, Connections.KickerInChannel);
         kickerOut = new Solenoid(Connections.SolenoidModuleSlot, Connections.KickerOutChannel);
@@ -39,6 +40,10 @@ public class BallHandler
         controlLoop.schedule(new UpdateTask(this), 0L, (long) (period*1000));
         frontRoller = new Victor(Connections.FrontRollerChannel);
         pullIn();
+    }
+    public static BallHandler getInstance()
+    {
+        return BallHandler.instance;
     }
     private class UpdateTask extends TimerTask
     {

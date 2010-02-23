@@ -13,10 +13,15 @@ import edu.wpi.first.wpilibj.Victor;
 public class Hanger
 {
     public Victor hangerMotor1, hangerMotor2;
-    public Hanger()
+    private static Hanger instance = new Hanger();
+    protected Hanger()
     {
         hangerMotor1 = new Victor(Connections.HangerMotorChannel1);
         hangerMotor2 = new Victor(Connections.HangerMotorChannel2);
+    }
+    public static Hanger getInstance()
+    {
+        return Hanger.instance;
     }
     public void set(boolean up)
     {

@@ -11,102 +11,153 @@ package edu.wpi.first.wpilibj.templates;
  */
 public class Autonomous
 {
-    private int autonSelect;
-    private double speed = -0.25;
-    private driveTrain drive;
-    private boolean stageOneComplete, stageTwoComplete, stageThreeComplete, stageFourComplete;
-    private BallHandler shooter;
-    public Autonomous(int autonSelect, driveTrain drive, BallHandler shooter)
+    private AutonAction[] Sequence;
+    private int step;
+    private int numberFilled;
+    private boolean complete;
+    public static double speed = -0.25;
+    private static Autonomous instance = new Autonomous();
+    protected Autonomous()
     {
-        stageOneComplete = stageTwoComplete = stageThreeComplete = stageFourComplete = false;
-        this.autonSelect = autonSelect;
-        this.drive = drive;
-        this.shooter = shooter;
+        step = 0;
+        numberFilled = 0;
     }
-    public void initialize()
+    public static Autonomous getInstance()
     {
-        drive.resetPositionTracking();
-        drive.setShifter(false);
-        shooter.setFrontRoller(true);
+        return Autonomous.instance;
+    }
+    public void initialize(int numberOfTasks)
+    {
+        Sequence = new AutonAction[numberOfTasks];
     }
     public void update()
     {
-        if(!stageOneComplete)
+        if(!complete)
         {
-            stageOne();
-        }
-        else if(!stageTwoComplete)
-        {
-            stageTwo();
-        }
-        else if(!stageThreeComplete)
-        {
-            stageThree();
-        }
-        System.out.println("Stage one: "+stageOneComplete+" Stage two: "+stageTwoComplete+" Stage three: "+stageThreeComplete+" Encoders: "+drive.getDistance());
-    }
-    private void stageOne()
-    {
-        if(autonSelect == 1)
-        {
-            drive.straight(speed);
-            if(drive.getDistance() > 16)
+            Sequence[step].execute();
+            if(Sequence[step].isDone())
             {
-                shooter.kick();
-                stageOneComplete = true;
-                shooter.reload();
+                step++;
             }
         }
-        else if(autonSelect == 2)
+        if(step >= Sequence.length)
         {
-
+            complete = true;
         }
-        else if(autonSelect == 3)
+        else
         {
-
-        }
-    }
-    private void stageTwo()
-    {
-        if(autonSelect == 1)
-        {
-            if(drive.getDistance() > 50)
-            {
-                shooter.kick();
-                stageTwoComplete = true;
-                shooter.reload();
-            }
-        }
-        else if(autonSelect == 2)
-        {
-
-        }
-        else if(autonSelect == 3)
-        {
-
+            complete = false;
         }
     }
-    private void stageThree()
+    public void goStraightUntil(final double distance)
     {
-        if(autonSelect == 1)
+        Sequence[numberFilled] = new AutonAction()
         {
-            if(drive.getDistance() > 87)
+            public boolean isDone()
             {
-                shooter.kick();
-                if(drive.getDistance() > 92)
+                if(DriveTrain.getInstance().getDistance() > distance)
                 {
-                    drive.straight(0.0);
-                    stageThreeComplete = true;
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
-        }
-        else if(autonSelect == 2)
-        {
-
-        }
-        else if(autonSelect == 3)
-        {
-
-        }
+            public void execute()
+            {
+                DriveTrain.getInstance().straight(Autonomous.speed);
+            }
+        };
+        numberFilled++;
     }
+    public void goStraight()
+    {
+        Sequence[numberFilled] = new AutonAction()
+        {
+            public boolean isDone()
+            {
+                return true;
+            }
+            public void execute()
+            {
+                DriveTrain.getInstance().straight(Autonomous.speed);
+            }
+        };
+        numberFilled++;
+    }
+    public void stopMoving()
+    {
+        Sequence[numberFilled] = new AutonAction()
+        {
+            public boolean isDone()
+            {
+                return true;
+            }
+            public void execute()
+            {
+                DriveTrain.getInstance().straight(0.0);
+            }
+        };
+        numberFilled++;
+    }
+    public void kick()
+    {
+        Sequence[numberFilled] = new AutonAction()
+        {
+            public boolean isDone()
+            {
+                return true;
+            }
+            public void execute()
+            {
+                BallHandler.getInstance().kick();
+            }
+        };
+        numberFilled++;
+    }
+    public void reload()
+    {
+        Sequence[numberFilled] = new AutonAction()
+        {
+            public boolean isDone()
+            {
+                return true;
+            }
+            public void execute()
+            {
+                BallHandler.getInstance().reload();
+            }
+        };
+        numberFilled++;
+    }
+    public void wait(final int numberOfCycles)
+    {
+        Sequence[numberFilled] = new AutonAction()
+        {
+            int cyclesCompleted = 0;
+            public boolean isDone()
+            {
+                if(cyclesCompleted >= numberOfCycles)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            public void execute()
+            {
+                cyclesCompleted++;
+            }
+        };
+        numberFilled++;
+    }
+}
+
+interface AutonAction
+{
+    boolean isDone();
+    void execute();
 }
