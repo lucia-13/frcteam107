@@ -39,6 +39,8 @@ public class Team107Robot extends IterativeRobot
     private Timer time;
     private Compressor compressor;
     private BallHandler kicker;
+    private Hanger hanger;
+    private Autonomous auton;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -55,6 +57,8 @@ public class Team107Robot extends IterativeRobot
         kicker = new BallHandler();
         compressor = new Compressor(Connections.PressureSwitchChannel, Connections.CompressorSpikeChannel);
         compressor.start();
+        hanger = new Hanger();
+        auton = new Autonomous(1, drive, kicker);
 //        cylinderIn = new Solenoid(8, Connections.SolenoidInChannel);
 //        cylinderOut = new Solenoid(8, Connections.SolenoidOutChannel);
 //        cylinderIsOut = false;
@@ -64,8 +68,15 @@ public class Team107Robot extends IterativeRobot
     /**
      * This function is called periodically during autonomous
      */
+    public void autonomousInit()
+    {
+        auton.initialize();
+    }
+
     public void autonomousPeriodic()
     {
+        auton.update();
+        //drive.printEncoders();
     }
 
     /**
@@ -79,11 +90,7 @@ public class Team107Robot extends IterativeRobot
         }
         if(leftStick.getRawButton(3))
         {
-            kicker.reload(true);
-        }
-        else if(leftStick.getRawButton(2))
-        {
-            //kicker.pullIn();
+            kicker.reload();
         }
         if(rightStick.getRawButton(3))
         {
@@ -94,7 +101,7 @@ public class Team107Robot extends IterativeRobot
             drive.setShifter(false);
         }
         drive.set(leftStick.getY(), rightStick.getY());
-        sendDashboardData();
+        
         if(leftStick.getRawButton(10))
         {
             kicker.setFrontRoller(true);
@@ -103,7 +110,30 @@ public class Team107Robot extends IterativeRobot
         {
             kicker.setFrontRoller(false);
         }
+        if(leftStick.getRawButton(6))
+        {
+            drive.leftEncoder.reset();
+            drive.rightEncoder.reset();
+        }
+        sendDashboardData();
         drive.printEncoders();
+        
+        
+        if(rightStick.getRawButton(6))
+        {
+            hanger.hangerMotor1.set(1.0);
+            hanger.hangerMotor2.set(1.0);
+        }
+        else if(rightStick.getRawButton(7))
+        {
+            hanger.hangerMotor1.set(-1.0);
+            hanger.hangerMotor2.set(-1.0);
+        }
+        else
+        {
+            hanger.hangerMotor1.set(0.0);
+            hanger.hangerMotor2.set(0.0);
+        }
     }
 
     public void sendDashboardData()
@@ -117,7 +147,7 @@ public class Team107Robot extends IterativeRobot
                 {
                     dash.addFloat((float) time.get());
                     dash.addFloat((float) drive.rightController.getSetpoint());
-                    dash.addFloat((float) rightStick.getY());
+                    dash.addFloat((float) drive.rightPIDOut.getValue());
                     dash.addFloat((float) time.get());
                     dash.addFloat((float) drive.leftController.getSetpoint());
                     dash.addFloat((float) drive.leftPIDOut.getValue());
@@ -131,10 +161,14 @@ public class Team107Robot extends IterativeRobot
                 dash.finalizeCluster();
                 dash.addCluster();
                 {
-                    for (int i = 1; i <= 8; i++)
-                    {
-                        dash.addFloat((float) AnalogModule.getInstance(2).getAverageVoltage(i));
-                    }
+                    dash.addFloat((float) drive.leftPID.p);
+                    dash.addFloat((float) drive.leftPID.i);
+                    dash.addFloat((float) drive.leftPID.d);
+                    dash.addFloat((float) drive.rightPID.p);
+                    dash.addFloat((float) drive.rightPID.i);
+                    dash.addFloat((float) drive.rightPID.d);
+                    dash.addFloat((float) 0.0);
+                    dash.addFloat((float) 0.0);
                 }
                 dash.finalizeCluster();
             }

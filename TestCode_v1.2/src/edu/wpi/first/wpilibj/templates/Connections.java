@@ -25,8 +25,8 @@ public class Connections
     public static final int LeftJoystickChannel = 1;
     public static final int RightJoystickChannel = 2;
     public static final int GyroChannel = 1;
-    public static final double RateRatio = 1.0; //SET THIS
-    public static final double EncoderDistancePerPulse = 1.0; //SET THIS
+    public static final double RateRatio = 20; //SET THIS
+    public static final double EncoderDistancePerPulse = 0.0369765455; //SET THIS
     public static final int KickerOutChannel = 1;
     public static final int KickerInChannel = 2;
     public static final int SolenoidModuleSlot = 8;
@@ -38,4 +38,5 @@ public class Connections
     public static final int HangerMotorChannel2 = 8;
     public static final int PressureSwitchChannel = 7;
     public static final int CompressorSpikeChannel = 8;
+    public static final int FanSpikeChannel = 7;
 }

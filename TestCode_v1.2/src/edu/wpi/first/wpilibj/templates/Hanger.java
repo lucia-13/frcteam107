@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.Victor;
  */
 public class Hanger
 {
-    private Victor hangerMotor1, hangerMotor2;
+    public Victor hangerMotor1, hangerMotor2;
     public Hanger()
     {
         hangerMotor1 = new Victor(Connections.HangerMotorChannel1);
@@ -22,7 +22,6 @@ public class Hanger
     {
         if(up)
         {
-
         }
         else
         {

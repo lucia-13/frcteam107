@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.Victor;
 public class BallHandler
 {
     private Solenoid kickerIn, kickerOut;
-    private boolean reloading, fireFast, firing;
+    private boolean reloading, firing;
     public Servo firingServo;
     public DigitalInput limitSwitch;
     private java.util.Timer controlLoop;
@@ -34,7 +34,6 @@ public class BallHandler
         servoOpen = 0.0;
         firingServo.set(servoLatched);
         reloading = false;
-        fireFast = true;
         period = 0.02;
         controlLoop = new java.util.Timer();
         controlLoop.schedule(new UpdateTask(this), 0L, (long) (period*1000));
@@ -62,13 +61,12 @@ public class BallHandler
             if(limitSwitch.get())
             {
                 pushOut();
+                //System.out.println("pushing out...");
             }
             else
             {
-                if(fireFast)
-                {
-                    pullIn();
-                }
+                //System.out.println("limit switch triggered, pulling in...");
+                pullIn();
                 reloading = false;
             }
         }
@@ -92,14 +90,15 @@ public class BallHandler
     {
         if(!reloading)
         {
+            //System.out.println("fire button pressed!");
             kickerOut.set(false);
             firing = true;
         }
     }
-    public void reload(boolean fireFast)
+    public void reload()
     {
+        //System.out.println("reload button pressed!");
         reloading = true;
-        this.fireFast = fireFast;
     }
     public void pullIn()
     {

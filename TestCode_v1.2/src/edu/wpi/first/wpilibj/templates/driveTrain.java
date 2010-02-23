@@ -24,9 +24,9 @@ public class driveTrain
     private double leftSpeed, rightSpeed;
     private Jaguar leftMotor1, rightMotor1, leftMotor2, rightMotor2;
     private double leftFactor, rightFactor;
-    private rateEncoder leftEncoder, rightEncoder;
+    public rateEncoder leftEncoder, rightEncoder;
     private Gyro gyro;
-    private PID leftPID, rightPID;
+    public PID leftPID, rightPID;
     public SoftPID leftPIDOut, rightPIDOut;
     public PIDController leftController, rightController;
     public boolean PIDControlled;
@@ -54,7 +54,11 @@ public class driveTrain
         leftEncoder = new rateEncoder(Connections.LeftEncoderChannelA, Connections.LeftEncoderChannelB);
         rightEncoder = new rateEncoder(Connections.RightEncoderChannelA, Connections.RightEncoderChannelB);
         leftEncoder.setDistancePerPulse(Connections.EncoderDistancePerPulse);
-        leftEncoder.setDistancePerPulse(Connections.EncoderDistancePerPulse);
+        rightEncoder.setDistancePerPulse(Connections.EncoderDistancePerPulse);
+        leftEncoder.setReverseDirection(false);
+        rightEncoder.setReverseDirection(true);
+        leftEncoder.start();
+        rightEncoder.start();
         gyro = new Gyro(Connections.GyroChannel);
         leftController = new PIDController(leftPID.p, leftPID.i, leftPID.d, leftEncoder, leftPIDOut);
         rightController = new PIDController(rightPID.p, rightPID.i, rightPID.d, rightEncoder, rightPIDOut);
@@ -62,13 +66,17 @@ public class driveTrain
         leftController.setOutputRange(-1.0, 1.0);
         rightController.setContinuous();
         rightController.setOutputRange(-1.0, 1.0);
+        leftController.setTolerance(50);
+        rightController.setTolerance(50);
+        leftController.enable();
+        rightController.enable();
         rateRatio = Connections.RateRatio;
         shifter = new Solenoid(Connections.SolenoidModuleSlot, Connections.ShifterChannel);
         period = 0.02;
         controlLoop = new java.util.Timer();
         controlLoop.schedule(new UpdateTask(this), 0L, (long) (period*1000));
-        fan = new Relay(7);
-        fan.set(Relay.Value.kOn);
+        fan = new Relay(Connections.FanSpikeChannel);
+        fan.set(Relay.Value.kForward);
     }
     private class UpdateTask extends TimerTask
     {
@@ -179,6 +187,8 @@ public class driveTrain
     public void resetPositionTracking()
     {
         x = y = 0;
+        leftEncoder.reset();
+        rightEncoder.reset();
         gyro.reset();
     }
     public double getX()
@@ -195,7 +205,7 @@ public class driveTrain
     }
     public void printEncoders()
     {
-        System.out.println("Left Encoder: "+leftEncoder.get()+"   Right Encoder: "+rightEncoder.get());
+        System.out.println("Left Encoder: "+leftEncoder.getDistance()+"   Right Encoder: "+rightEncoder.getDistance());
     }
     private synchronized void checkSpeed()
     {
@@ -219,6 +229,10 @@ public class driveTrain
             rightSpeed = -1.0;
             System.out.println("right speed over!");
         }
+    }
+    public double getDistance()
+    {
+        return (leftEncoder.getDistance()+rightEncoder.getDistance())/2;
     }
     public void free() //DON'T CALL UNLESS NECESSARY
     {
