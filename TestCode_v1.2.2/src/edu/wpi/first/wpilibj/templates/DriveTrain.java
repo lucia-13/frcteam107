@@ -116,10 +116,8 @@ public class DriveTrain
             rightMotor1.set(rightSpeed);
             rightMotor2.set(rightSpeed);
         }
-        x += java.lang.Math.cos(java.lang.Math.toRadians(gyro.getAngle()-90))
-                *(leftEncoder.getDistanceChange()+rightEncoder.getDistanceChange())/2;
-        y += java.lang.Math.sin(java.lang.Math.toRadians(gyro.getAngle()-90))
-                *(leftEncoder.getDistanceChange() +rightEncoder.getDistanceChange())/2;
+        y += java.lang.Math.cos(java.lang.Math.toRadians(gyro.getAngle()))*getDistance();
+        x += -1.0*java.lang.Math.sin(java.lang.Math.toRadians(gyro.getAngle()))*getDistance();
     }
     public void set(double leftSpeed, double rightSpeed)
     {
