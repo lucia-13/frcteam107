@@ -70,8 +70,8 @@ public class Team107Robot extends IterativeRobot
      */
     public void autonomousInit()
     {
-        auton.initialize(1);
-        auton.goStraightUntil(20);
+        auton.initialize();
+        auton.goStraight();
     }
 
     public void autonomousPeriodic()

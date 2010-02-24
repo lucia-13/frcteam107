@@ -4,6 +4,8 @@
  */
 
 package edu.wpi.first.wpilibj.templates;
+import java.util.Vector;
+
 
 /**
  *
@@ -11,36 +13,47 @@ package edu.wpi.first.wpilibj.templates;
  */
 public class Autonomous
 {
-    private AutonAction[] Sequence;
+    private Vector Sequence;
     private int step;
-    private int numberFilled;
     private boolean complete;
     public static double speed = -0.25;
     private static Autonomous instance = new Autonomous();
     protected Autonomous()
     {
         step = 0;
-        numberFilled = 0;
     }
     public static Autonomous getInstance()
     {
         return Autonomous.instance;
     }
-    public void initialize(int numberOfTasks)
+    public void initialize()
     {
-        Sequence = new AutonAction[numberOfTasks];
+        Sequence = new Vector();
     }
     public void update()
     {
         if(!complete)
         {
-            Sequence[step].execute();
-            if(Sequence[step].isDone())
+            AutonAction action;
+            try
             {
+                action = (AutonAction) Sequence.elementAt(step);
+            }
+            catch(ClassCastException e)
+            {
+                action = null;
                 step++;
             }
+            if(action != null)
+            {
+                action.execute();
+                if(action.isDone())
+                {
+                    step++;
+                }
+            }
         }
-        if(step >= Sequence.length)
+        if(step >= Sequence.size())
         {
             complete = true;
         }
@@ -51,7 +64,7 @@ public class Autonomous
     }
     public void goStraightUntil(final double distance)
     {
-        Sequence[numberFilled] = new AutonAction()
+        Sequence.addElement(new AutonAction()
         {
             public boolean isDone()
             {
@@ -68,12 +81,11 @@ public class Autonomous
             {
                 DriveTrain.getInstance().straight(Autonomous.speed);
             }
-        };
-        numberFilled++;
+        });
     }
     public void goStraight()
     {
-        Sequence[numberFilled] = new AutonAction()
+        Sequence.addElement(new AutonAction()
         {
             public boolean isDone()
             {
@@ -83,12 +95,11 @@ public class Autonomous
             {
                 DriveTrain.getInstance().straight(Autonomous.speed);
             }
-        };
-        numberFilled++;
+        });
     }
     public void stopMoving()
     {
-        Sequence[numberFilled] = new AutonAction()
+        Sequence.addElement(new AutonAction()
         {
             public boolean isDone()
             {
@@ -98,12 +109,11 @@ public class Autonomous
             {
                 DriveTrain.getInstance().straight(0.0);
             }
-        };
-        numberFilled++;
+        });
     }
     public void kick()
     {
-        Sequence[numberFilled] = new AutonAction()
+        Sequence.addElement(new AutonAction()
         {
             public boolean isDone()
             {
@@ -113,12 +123,11 @@ public class Autonomous
             {
                 BallHandler.getInstance().kick();
             }
-        };
-        numberFilled++;
+        });
     }
     public void reload()
     {
-        Sequence[numberFilled] = new AutonAction()
+        Sequence.addElement(new AutonAction()
         {
             public boolean isDone()
             {
@@ -128,12 +137,11 @@ public class Autonomous
             {
                 BallHandler.getInstance().reload();
             }
-        };
-        numberFilled++;
+        });
     }
     public void wait(final int numberOfCycles)
     {
-        Sequence[numberFilled] = new AutonAction()
+        Sequence.addElement(new AutonAction()
         {
             int cyclesCompleted = 0;
             public boolean isDone()
@@ -151,8 +159,7 @@ public class Autonomous
             {
                 cyclesCompleted++;
             }
-        };
-        numberFilled++;
+        });
     }
 }
 
