@@ -38,7 +38,7 @@ public class Jaguar implements SpeedController
         this.CANControlled = CANControlled;
         brake = false;
     }
-    public double getTemp()
+    public double getTemperature()
     {
         if(CANControlled)
         {
