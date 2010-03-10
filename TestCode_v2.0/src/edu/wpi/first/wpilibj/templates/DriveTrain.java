@@ -28,7 +28,7 @@ public class DriveTrain
     public PID leftPID, rightPID;
     public SoftPID leftPIDOut, rightPIDOut;
     public PIDController leftController, rightController;
-    public boolean PIDControlled;
+    public boolean PIDControlled, enabled;
     private double rateRatio;
     private double x, y;
     private Solenoid shifter;
@@ -77,6 +77,7 @@ public class DriveTrain
         controlLoop.schedule(new UpdateTask(this), 0L, (long) (period*1000));
         fan = new Relay(Connections.FanSpikeChannel);
         fan.set(Relay.Value.kForward);
+        enabled = true;
     }
     public static DriveTrain getInstance()
     {
@@ -98,27 +99,30 @@ public class DriveTrain
     }
     public synchronized void update()
     {
-        checkSpeed();
-        if(PIDControlled)
+        if(enabled)
         {
-            leftController.setSetpoint(leftSpeed*rateRatio);
-            rightController.setSetpoint(rightSpeed*rateRatio);
-            leftMotor1.set(leftPIDOut.getValue());
-            leftMotor2.set(leftPIDOut.getValue());
-            rightMotor1.set(rightPIDOut.getValue());
-            rightMotor2.set(rightPIDOut.getValue());
+            checkSpeed();
+            if(PIDControlled)
+            {
+                leftController.setSetpoint(leftSpeed*rateRatio);
+                rightController.setSetpoint(rightSpeed*rateRatio);
+                leftMotor1.set(leftPIDOut.getValue());
+                leftMotor2.set(leftPIDOut.getValue());
+                rightMotor1.set(rightPIDOut.getValue());
+                rightMotor2.set(rightPIDOut.getValue());
+            }
+            else
+            {
+                leftMotor1.set(leftSpeed);
+                leftMotor2.set(leftSpeed);
+                rightMotor1.set(rightSpeed);
+                rightMotor2.set(rightSpeed);
+            }
+            x += java.lang.Math.cos(java.lang.Math.toRadians(gyro.getAngle()-90))
+                    *(leftEncoder.getDistanceChange()+rightEncoder.getDistanceChange())/2;
+            y += java.lang.Math.sin(java.lang.Math.toRadians(gyro.getAngle()-90))
+                    *(leftEncoder.getDistanceChange() +rightEncoder.getDistanceChange())/2;
         }
-        else
-        {
-            leftMotor1.set(leftSpeed);
-            leftMotor2.set(leftSpeed);
-            rightMotor1.set(rightSpeed);
-            rightMotor2.set(rightSpeed);
-        }
-        x += java.lang.Math.cos(java.lang.Math.toRadians(gyro.getAngle()-90))
-                *(leftEncoder.getDistanceChange()+rightEncoder.getDistanceChange())/2;
-        y += java.lang.Math.sin(java.lang.Math.toRadians(gyro.getAngle()-90))
-                *(leftEncoder.getDistanceChange() +rightEncoder.getDistanceChange())/2;
     }
     public void set(double leftSpeed, double rightSpeed)
     {
@@ -246,5 +250,13 @@ public class DriveTrain
     {
         controlLoop.cancel();
         controlLoop = null;
+    }
+    public void enable()
+    {
+        enabled = true;
+    }
+    public void disable()
+    {
+        enabled = false;
     }
 }

@@ -19,7 +19,7 @@ import java.util.TimerTask;
 public class BallHandler
 {
     private Solenoid kickerIn, kickerOut;
-    private boolean reloading, firing, manualOverride, fastKick;
+    private boolean reloading, firing, manualOverride, fastKick, enabled;
     public Servo firingServo;
     public DigitalInput limitSwitch;
     private java.util.Timer controlLoop;
@@ -49,6 +49,7 @@ public class BallHandler
         rollerSpeed = 1.0;
         rollerIdle = -0.25;
         setFrontRoller(false);
+        enabled = true;
     }
     public static BallHandler getInstance()
     {
@@ -70,48 +71,51 @@ public class BallHandler
     }
     public void update()
     {
-        if(!manualOverride)
+        if(enabled)
         {
-            if(reloading)
+            if(!manualOverride)
             {
+                if(reloading)
+                {
+                    if(limitSwitch.get())
+                    {
+                        pushOut();
+                        //System.out.println("pushing out...");
+                        reloadTimer = 0;
+                    }
+                    else
+                    {
+                        if(reloadTimer > 20)
+                        {
+                            if(fastKick)
+                            {
+                                pullIn();
+                            }
+                            else
+                            {
+    //                            kickerOut.set(true);
+    //                            kickerIn.set(true);
+                            }
+                            reloading = false;
+                        }
+                        reloadTimer++;
+                    }
+                }
                 if(limitSwitch.get())
                 {
-                    pushOut();
-                    //System.out.println("pushing out...");
-                    reloadTimer = 0;
+                    firingServo.set(servoLatched);
                 }
-                else
+                if(firing)
                 {
-                    if(reloadTimer > 20)
+                    if(!limitSwitch.get())
                     {
-                        if(fastKick)
-                        {
-                            pullIn();
-                        }
-                        else
-                        {
-//                            kickerOut.set(true);
-//                            kickerIn.set(true);
-                        }
-                        reloading = false;
+                        firingServo.set(servoOpen);
                     }
-                    reloadTimer++;
-                }
-            }
-            if(limitSwitch.get())
-            {
-                firingServo.set(servoLatched);
-            }
-            if(firing)
-            {
-                if(!limitSwitch.get())
-                {
-                    firingServo.set(servoOpen);
-                }
-                else
-                {
-                    firing = false;
-                    //System.out.println("Done Firing.");
+                    else
+                    {
+                        firing = false;
+                        //System.out.println("Done Firing.");
+                    }
                 }
             }
         }
@@ -196,5 +200,13 @@ public class BallHandler
     public void setRollerSpeed(double rollerSpeed)
     {
         this.rollerSpeed = rollerSpeed;
+    }
+    public void enable()
+    {
+        enabled = true;
+    }
+    public void disable()
+    {
+        enabled = false;
     }
 }
