@@ -5,7 +5,6 @@
 
 package edu.wpi.first.wpilibj.templates;
 
-import edu.wpi.first.wpilibj.SensorBase;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.Encoder;
 

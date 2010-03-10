@@ -7,8 +7,10 @@ package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.DigitalInput;
-import java.util.TimerTask;
 import edu.wpi.first.wpilibj.Victor;
+import java.util.TimerTask;
+
+
 
 /**
  *
