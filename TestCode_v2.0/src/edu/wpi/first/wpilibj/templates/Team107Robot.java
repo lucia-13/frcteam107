@@ -45,6 +45,7 @@ public class Team107Robot extends IterativeRobot
     private Hanger hanger;
     private Autonomous auton;
     boolean rollerLock;
+    private int disabledStep;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -275,5 +276,35 @@ public class Team107Robot extends IterativeRobot
         }
         dash.finalizeCluster();
         dash.commit();
+    }
+    public void disabledInit()
+    {
+        System.out.println("We're disabled, captain!");
+        disabledStep = 0;
+    }
+    public void disabledPeriodic()
+    {
+        System.out.print("\b");
+        if(disabledStep == 0)
+        {
+            System.out.print("|");
+        }
+        else if(disabledStep == 1)
+        {
+            System.out.print("/");
+        }
+        else if(disabledStep == 2)
+        {
+            System.out.print("-");
+        }
+        else if(disabledStep == 3)
+        {
+            System.out.print("\\");
+        }
+        disabledStep++;
+        if(disabledStep == 4)
+        {
+            disabledStep = 0;
+        }
     }
 }
