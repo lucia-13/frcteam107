@@ -2,7 +2,6 @@
  * This class holds all physical connections slots, channels, etc.
  * It provides us with a way to change a number in one place to change it everywhere.
  *
- * BE SURE TO MAKE AN OBJECT OF THIS CLASS IN THE BEGINNING OF THE CLASS USING IT!
  *
  */
 

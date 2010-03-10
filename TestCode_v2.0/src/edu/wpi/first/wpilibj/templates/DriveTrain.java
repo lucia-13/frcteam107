@@ -8,7 +8,6 @@
  */
 
 package edu.wpi.first.wpilibj.templates;
-import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -39,10 +38,10 @@ public class DriveTrain
     private static DriveTrain instance = new DriveTrain(new PID(0.01, 0.001, 0.0), new PID(0.01, 0.001, 0.0), false);
     protected DriveTrain(PID leftPID, PID rightPID, boolean PIDControlled)
     {
-        leftMotor1 = new Jaguar(Connections.LeftMotorChannel1);
-        leftMotor2 = new Jaguar(Connections.LeftMotorChannel2);
-        rightMotor1 = new Jaguar(Connections.RightMotorChannel1);
-        rightMotor2 = new Jaguar(Connections.RightMotorChannel2);
+        leftMotor1 = new Jaguar(Connections.LeftMotorChannel1, false);
+        leftMotor2 = new Jaguar(Connections.LeftMotorChannel2, false);
+        rightMotor1 = new Jaguar(Connections.RightMotorChannel1, false);
+        rightMotor2 = new Jaguar(Connections.RightMotorChannel2, false);
         leftSpeed = rightSpeed = 0.0;
         x = y = 0;
         leftFactor = -1.0;
