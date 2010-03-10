@@ -6,10 +6,9 @@
  *
  *
  *
+ * This is the version of the code that we used in Traverse City. In theory,
+ * it shouldn't have to be edited at all. But we all know how THAT goes...
  *
- * In this version, we are trying to get PID Loops working for the wheels.
- * Also, we are trying to get our Version Control working, and this comment
- * is proof of that fact.
  */
 /*----------------------------------------------------------------------------*/
 package edu.wpi.first.wpilibj.templates;
