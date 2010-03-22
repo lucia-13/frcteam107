@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.DigitalModule;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStationLCD;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -173,13 +174,15 @@ public class Team107Robot extends IterativeRobot
         {
             kicker.kick();
         }
-        if(thirdStick.getRawButton(9))
+        if(leftStick.getRawButton(7))
         {
-            kicker.setRollerSpeed(-1.0);
+            drive.leftFactor = 1.0;
+            drive.rightFactor = -1.0;
         }
-        else
+        else if(leftStick.getRawButton(6))
         {
-            kicker.setRollerSpeed(1.0);
+            drive.leftFactor = -1.0;
+            drive.rightFactor = 1.0;
         }
         sendDashboardData();
         //drive.printEncoders();
@@ -192,30 +195,74 @@ public class Team107Robot extends IterativeRobot
         {
             dash.addCluster();
             {     //analog modules
+//                dash.addCluster();
+//                {
+//                    dash.addFloat((float) time.get());
+//                    dash.addFloat((float) drive.rightController.getSetpoint());
+//                    dash.addFloat((float) drive.rightPIDOut.getValue());
+//                    dash.addFloat((float) drive.leftController.getSetpoint());
+//                    dash.addFloat((float) drive.leftPIDOut.getValue());
+//                    dash.addFloat((float) drive.getX());
+//                    dash.addFloat((float) drive.getY());
+////                  dash.addFloat((float) time.get());
+//                    dash.addFloat((float) drive.leftController.getSetpoint());
+//                    dash.addFloat((float) drive.leftPIDOut.getValue());
+//                    dash.addFloat((float) drive.getX());
+//                    dash.addFloat((float) drive.getY());
+////                    for (int i = 1; i <= 8; i++)
+////                    {
+////                        dash.addFloat((float) AnalogModule.getInstance(1).getAverageVoltage(i));
+////                    }
+//                }
+//                dash.finalizeCluster();
                 dash.addCluster();
                 {
                     dash.addFloat((float) time.get());
-                    dash.addFloat((float) drive.rightController.getSetpoint());
-                    dash.addFloat((float) drive.rightPIDOut.getValue());
-                    dash.addFloat((float) time.get());
-                    dash.addFloat((float) drive.leftController.getSetpoint());
-                    dash.addFloat((float) drive.leftPIDOut.getValue());
-                    dash.addFloat((float) drive.getX());
-                    dash.addFloat((float) drive.getY());
-//                    for (int i = 1; i <= 8; i++)
-//                    {
-//                        dash.addFloat((float) AnalogModule.getInstance(1).getAverageVoltage(i));
-//                    }
+                    dash.addFloat((float) kicker.getFrontRollerSpeed());
+                    if(kicker.isLoaded())
+                    {
+                        dash.addFloat(1);
+                    }
+                    else
+                    {
+                        dash.addFloat(0);
+                    }
+                    if(drive.getShifter())
+                    {
+                        dash.addFloat(1);
+                    }
+                    else
+                    {
+                        dash.addFloat(0);
+                    }
+                    dash.addFloat((float) 0.0);
+                    dash.addFloat((float) 0.0);
+                    dash.addFloat((float) 0.0);
+                    dash.addFloat((float) 0.0);
                 }
                 dash.finalizeCluster();
                 dash.addCluster();
                 {
-                    dash.addFloat((float) drive.leftPID.p);
-                    dash.addFloat((float) drive.leftPID.i);
-                    dash.addFloat((float) drive.leftPID.d);
-                    dash.addFloat((float) drive.rightPID.p);
-                    dash.addFloat((float) drive.rightPID.i);
-                    dash.addFloat((float) drive.rightPID.d);
+                    dash.addFloat((float) time.get());
+                    dash.addFloat((float) kicker.getFrontRollerSpeed());
+                    if(kicker.isLoaded())
+                    {
+                        dash.addFloat(1);
+                    }
+                    else
+                    {
+                        dash.addFloat(0);
+                    }
+                    if(drive.getShifter())
+                    {
+                        dash.addFloat(1);
+                    }
+                    else
+                    {
+                        dash.addFloat(0);
+                    }
+                    dash.addFloat((float) 0.0);
+                    dash.addFloat((float) 0.0);
                     dash.addFloat((float) 0.0);
                     dash.addFloat((float) 0.0);
                 }
@@ -281,28 +328,82 @@ public class Team107Robot extends IterativeRobot
     {
         System.out.println("We're disabled, captain!");
         disabledStep = 0;
+//        String s = PositiveCriticismAssistant.criticizePositively();
+//        for(int i = 1; i < 4; i++)
+//        {
+//            DriverStationLCD.getInstance().println(intToLine(i), 1, s.substring(0, DriverStationLCD.kLineLength));
+//            s = s.substring(DriverStationLCD.kLineLength);
+//            if(s.length() <= 0)
+//            {
+//                break;
+//            }
+//        }
     }
+//    DriverStationLCD.Line intToLine(int lineNumber)
+//    {
+//        if(lineNumber == 1)
+//        {
+//            return DriverStationLCD.Line.kUser2;
+//        }
+//        else if(lineNumber == 2)
+//        {
+//            return DriverStationLCD.Line.kUser3;
+//        }
+//        else if(lineNumber == 3)
+//        {
+//            return DriverStationLCD.Line.kUser4;
+//        }
+//        else if(lineNumber == 3)
+//        {
+//            return DriverStationLCD.Line.kUser5;
+//        }
+//        else if(lineNumber == 4)
+//        {
+//            return DriverStationLCD.Line.kUser6;
+//        }
+//        else
+//        {
+//            return null;
+//        }
+//    }
     public void disabledPeriodic()
     {
-        System.out.print("\b");
         if(disabledStep == 0)
         {
-            System.out.print("|");
+            System.out.print("G");
         }
-        else if(disabledStep == 1)
+        if(disabledStep == 1)
         {
-            System.out.print("/");
+            System.out.print("O");
         }
         else if(disabledStep == 2)
         {
-            System.out.print("-");
+            System.out.print(" ");
         }
         else if(disabledStep == 3)
         {
-            System.out.print("\\");
+            System.out.print("F");
         }
+        else if(disabledStep == 4)
+        {
+            System.out.print("L");
+        }
+        else if(disabledStep == 5)
+        {
+            System.out.print("O");
+        }
+        else if(disabledStep == 6)
+        {
+            System.out.print("!");
+        }
+        else if(disabledStep == 7 || disabledStep == 8 || disabledStep == 9 || disabledStep == 10)
+        {
+            System.out.println();
+        }
+        System.out.println();
+        Timer.delay(0.3);
         disabledStep++;
-        if(disabledStep == 4)
+        if(disabledStep == 8)
         {
             disabledStep = 0;
         }

@@ -46,8 +46,8 @@ public class BallHandler
         reloadTimer = 0;
         manualOverride = false;
         fastKick = true;
-        rollerSpeed = 1.0;
-        rollerIdle = -0.25;
+        rollerSpeed = 0.5;
+        rollerIdle = 0.0;
         setFrontRoller(false);
         enabled = true;
     }
@@ -163,14 +163,19 @@ public class BallHandler
     }
     public void toggleFrontRoller()
     {
-        if(frontRoller.get() == rollerSpeed)
-        {
-            frontRoller.set(rollerIdle);
-        }
-        else
+        System.out.println(frontRoller.get()+"               "+rollerSpeed);
+        if(frontRoller.get() <= (rollerIdle+rollerSpeed)/2)
         {
             frontRoller.set(rollerSpeed);
         }
+        else
+        {
+            frontRoller.set(rollerIdle);
+        }
+    }
+    public double getFrontRollerSpeed()
+    {
+        return frontRoller.get();
     }
     public void setOverride(boolean state)
     {
@@ -200,6 +205,10 @@ public class BallHandler
     public void setRollerSpeed(double rollerSpeed)
     {
         this.rollerSpeed = rollerSpeed;
+    }
+    public boolean isLoaded()
+    {
+        return !limitSwitch.get();
     }
     public void enable()
     {
