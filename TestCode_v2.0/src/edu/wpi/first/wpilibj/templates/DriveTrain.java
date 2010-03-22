@@ -22,7 +22,7 @@ public class DriveTrain
 {
     private double leftSpeed, rightSpeed;
     private Jaguar leftMotor1, rightMotor1, leftMotor2, rightMotor2;
-    private double leftFactor, rightFactor;
+    public double leftFactor, rightFactor;
     public rateEncoder leftEncoder, rightEncoder;
     private Gyro gyro;
     public PID leftPID, rightPID;
@@ -175,10 +175,10 @@ public class DriveTrain
             shifter.set(true);
         }
     }
-
-
-
-
+    public boolean getShifter()
+    {
+        return shifter.get();
+    }
     public PID getLeftPID()
     {
         return leftPID;
