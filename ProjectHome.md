@@ -1,0 +1,1 @@
+This is a common place to keep track of our robot code. This is very important for keeping all our code backed up, but also for helping other teams to build off our code. We use Java to program our robot (as of 2010) and implement WPILibj. We have no objections to our code being used in any form, modified or identical.
